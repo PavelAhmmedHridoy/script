@@ -51,11 +51,12 @@ const ROUTES = {
     { dir: "app", match: /^index\.(tsx|ts|jsx|js)$/, to: (rel, match) => `src/@app.${match[1]}` },
 
     // Per-page and per-folder layouts live under app/<subpath>/_layout.<ext>.
-    // They map back to src/@pages/<subpath>/_layout.<ext> so pull is consistent
-    // with the forward sync direction.
+    // Rexpo accepts them in src as `layout.<ext>` and renders them as `_layout.<ext>`
+    // in the expo template. On pull, map them back to the same `layout.<ext>` name.
     { dir: "app", match: /^(.*\/)?_layout\.(tsx|ts|jsx|js)$/, to: (rel, match) => {
       const sub = match[1] || "";
-      return `src/@pages/${sub}_layout.${match[2]}`;
+      const ext = match[2];
+      return `src/@pages/${sub}layout.${ext}`;
     }},
 
     // Page routes: everything else under app/ maps back to @pages.

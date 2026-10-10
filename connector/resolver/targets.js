@@ -52,11 +52,19 @@ function getLayoutTargetPath(template) {
 function getPagesTargetPath(relativePath, template) {
   const segments = relativePath.split("/");
   const fileSegments = segments.slice(1);
-  const relativeFile = fileSegments.join("/");
+  let relativeFile = fileSegments.join("/");
 
   if (template === "react") {
     return path.join(targetRoot(template), relativeFile);
   }
+
+  // Expo router: if the page tree includes a layout file named
+  // `layout.<ext>` it should become `app/<subpath>/_layout.<ext>`.
+  relativeFile = relativeFile.replace(
+    /\/?layout\.(tsx|ts|jsx|js)$/i,
+    (m, ext) => `/_layout.${ext}`
+  );
+
   return path.join(targetRoot(template), "app", relativeFile);
 }
 
