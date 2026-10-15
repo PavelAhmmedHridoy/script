@@ -31,10 +31,16 @@ const NPM_BARE_COMMANDS = new Set(["start", "stop", "test", "restart"]);
  *   or worse, get passed to npm as one single unrecognized argument.
  * - Uses `run <script>` for npm unless the script is one of the few names
  *   npm runs bare; pnpm/yarn/bun can always run a script name directly.
- * - Always inserts `--` before extra args. Without it, npm treats flags
- *   like `--port` as its own (unrecognized) CLI options and drops them —
- *   which is why `expo start` was seeing a bare positional "8081" instead
- *   of `--port 8081`.
+ * - Inserts `--` before extra args for npm only. npm needs it: without it,
+ *   npm treats flags like `--port` as its own (unrecognized) CLI options and
+ *   drops them — which is why `expo start` was seeing a bare positional
+ *   "8081" instead of `--port 8081`.
+ * - The other package managers forward trailing args to the script by
+ *   themselves, and pass a literal `--` straight through: pnpm ends up
+ *   invoking `vite -- --port 7681 --host`, and Vite stops parsing options at
+ *   the first `--` (they become positionals), so the dev server ignored the
+ *   configured port and stayed on Vite's default 5173. yarn and bun treat
+ *   trailing flags the same way — args go in unseparated.
  *
  * @param {string} pm
  * @param {string} script
@@ -49,7 +55,9 @@ function buildArgv(pm, script, args) {
       ? ["run", cleanScript]
       : [cleanScript];
 
-  return args.length ? [...base, "--", ...args] : base;
+  if (!args.length) return base;
+
+  return pm === "npm" ? [...base, "--", ...args] : [...base, ...args];
 }
 
 /**

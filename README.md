@@ -235,7 +235,7 @@ that folder is Vite's `publicDir` (set explicitly in
 Two files are **generated, not authored**:
 
 - `template/react/src/main.tsx` — mounts `<Layout><App /></Layout>`, imports
-  `index.css` (Tailwind) and `global.css`. With `src/@pages/` present it
+  the author's `global.css`. With `src/@pages/` present it
   becomes a real router: a `BrowserRouter` wraps `Routes` generated from the
   pages under `template/react/src/` (`index` → `/`, `about` → `/about`,
   `[id]` → `/:id`), with the author's `@app` as the index route — the same

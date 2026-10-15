@@ -51,9 +51,11 @@ function reactEntry(sources, pages = []) {
     imports.push(`import Layout from "./@layout.${layoutExt}";`);
   }
 
-  // ./index.css is the template's Tailwind v4 entry; ./global.css is the
-  // author's, and must come second so their rules win.
-  imports.push(`import "./index.css";`, `import "./global.css";`);
+  // ./global.css is the author's, mirrored next to App.tsx by
+  // [global-css].js. With the template's own index.css gone, this is the
+  // web target's only stylesheet — and it is imported last so the author's
+  // rules win.
+  imports.push(`import "./global.css";`);
 
   for (const page of pages) {
     imports.push(`import ${routeName(page)} from "${page.importPath}";`);
